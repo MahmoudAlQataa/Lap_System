@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Report Saved</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            color: #333;
+        }
+
+        .success-container {
+            background-color: white;
+            padding: 50px 60px;
+            border-radius: 15px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+            text-align: center;
+            animation: slideIn 0.5s ease-out;
+            max-width: 600px;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateY(-50px);
+                opacity: 0;
+            }
+
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .success-icon {
+            font-size: 80px;
+            color: #27ae60;
+            margin-bottom: 20px;
+            animation: checkmark 0.6s ease-in-out;
+        }
+
+        @keyframes checkmark {
+            0% {
+                transform: scale(0);
+            }
+
+            50% {
+                transform: scale(1.2);
+            }
+
+            100% {
+                transform: scale(1);
+            }
+        }
+
+        h2 {
+            color: #2c3e50;
+            font-size: 28px;
+            margin-bottom: 15px;
+            font-weight: 700;
+        }
+
+        p {
+            color: #7f8c8d;
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 30px;
+        }
+
+        /* أزرار الطباعة */
+        .print-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin-top: 30px;
+        }
+
+        .print-btn {
+            padding: 15px 30px;
+            font-size: 16px;
+            font-weight: 700;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: block;
+            color: white;
+        }
+
+        .print-all {
+            background-color: #27ae60;
+        }
+
+        .print-all:hover {
+            background-color: #229954;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(39, 174, 96, 0.4);
+        }
+
+        .print-current {
+            background-color: #3498db;
+        }
+
+        .print-current:hover {
+            background-color: #2980b9;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(52, 152, 219, 0.4);
+        }
+
+        .skip-btn {
+            background-color: transparent;
+            color: #7f8c8d;
+            margin-top: 15px;
+            padding: 10px;
+            font-size: 14px;
+            border: 1px solid #ddd;
+        }
+
+        .skip-btn:hover {
+            background-color: #f8f9fa;
+            color: #2c3e50;
+        }
+
+        .print-individual {
+            background-color: #9b59b6;
+        }
+
+        .print-individual:hover {
+            background-color: #8e44ad;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(155, 89, 182, 0.4);
+        }
+    </style>
+</head>
+
+<body>
+    <div class="success-container">
+        <div class="success-icon">✅</div>
+        <h2>تم حفظ التقرير بنجاح!</h2>
+        {% if analyses_count %}
+        <p>تم حفظ {{ analyses_count }} تحليل/تحاليل</p>
+        {% endif %}
+
+        <p style="font-size: 16px; color: #2c3e50; margin-top: 20px;">اختر خيار الطباعة:</p>
+
+        <div class="print-buttons">
+            <!-- ======================================= -->
+            <!-- زر الطباعة الشاملة (إذا أكثر من تحليل) -->
+            <!-- ======================================= -->
+            {% if analyses_count > 1 %}
+            <button class="print-btn print-all" onclick="printAll()">
+                📄 Print All Analyses ({{ analyses_count }} Tests)
+            </button>
+
+            <p style="font-size: 14px; color: #95a5a6; margin: 15px 0;">- OR -</p>
+            {% endif %}
+
+            <!-- ======================================= -->
+            <!-- أزرار الطباعة الفردية لكل تحليل -->
+            <!-- ======================================= -->
+            {% for analysis in analyses_list %}
+            <button class="print-btn {% if analysis.is_active %}print-current{% else %}print-individual{% endif %}"
+                onclick="printAnalysis({{ analysis.id }})">
+                🖨️ Print {{ analysis.name }}
+                {% if analysis.is_active %}
+                <span style="font-size: 12px; opacity: 0.8;">(Current)</span>
+                {% endif %}
+            </button>
+            {% endfor %}
+
+            <!-- ======================================= -->
+            <!-- زر التخطي -->
+            <!-- ======================================= -->
+            <button class="print-btn skip-btn" onclick="skipToDashboard()">
+                ⏭️ Skip - Go to Dashboard
+            </button>
+        </div>
+    </div>
+
+    <script>
+        // =======================================
+        // دوال الطباعة
+        // =======================================
+
+        function printAll() {
+            // ✅ فقط فتح صفحة الطباعة - بدون انتقال تلقائي
+            window.open('/print-comprehensive/{{ patient_id }}', '_blank');
+        }
+
+        function printAnalysis(analysisId) {
+            // ✅ فقط فتح صفحة الطباعة - بدون انتقال تلقائي
+            window.open('/print-single/' + analysisId, '_blank');
+        }
+
+        function skipToDashboard() {
+            // ✅ الانتقال فقط عند الضغط على Skip
+            window.location.href = '/new-report';
+        }
+    </script>
+</body>
+
+</html>

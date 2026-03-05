@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="../static/css/reports.css">
+    <title>Reports</title>
+</head>
+
+<body>
+
+    <div class="top-bar">
+        <div class="nav-buttons">
+            <a href="/new-report"><button>➕ إضافة تقرير جديد</button></a>
+            <a href="/reports"><button>📄 عرض جميع التقارير</button></a>
+        </div>
+
+        <div class="search-box">
+            <input type="text" id="searchInput" placeholder="🔍 ابحث بالاسم أو رقم الهوية...">
+        </div>
+    </div>
+
+    <!-- صقحة عرض كل قاعدة البيانات -->
+    <h2>Reports Lists</h2>
+
+    <table border="1">
+        <!-- الهيدر للجدول -->
+        <tr>
+            <th>ID</th>
+            <th>Name</th>
+            <th>ID Number</th>
+            <th>Analysis</th>
+            <th>Date</th>
+            <th>View</th>
+            <th>PDF</th>
+        </tr>
+
+        <!-- لوب للبيانات -->
+        <!-- البيانات مخزنة بطريقة list of tupels -->
+        {% for p in patients %}
+        <tr>
+            <td>{{ p[0] }}</td>
+            <td>{{ p[1] }}</td>
+            <td>{{ p[2] }}</td>
+            <td>{{ p[3] }}</td>
+            <td>{{ p[4] }}</td>
+            <td>
+                <a href="/reports/{{ p[0] }}" target="_blank">View</a>
+            </td>
+            <td>
+                <a href="/print/{{ p[0] }}" target="_blank">Open PDF</a>
+            </td>
+        </tr>
+        {% endfor %}
+
+    </table>
+
+
+    <!-- سكريبت للبحث عن المريض -->
+    <script>
+        // البحث المباشر
+        document.getElementById('searchInput').addEventListener('keyup', function () {
+            const searchValue = this.value.toLowerCase();
+            const table = document.querySelector('table');
+            const rows = table.getElementsByTagName('tr');
+
+            // نبدأ من 1 عشان نتجنب الهيدر
+            for (let i = 1; i < rows.length; i++) {
+                const nameCell = rows[i].getElementsByTagName('td')[1]; // عمود الاسم
+                const idCell = rows[i].getElementsByTagName('td')[2];   // عمود رقم الهوية
+
+                if (nameCell && idCell) {
+                    const nameText = nameCell.textContent.toLowerCase();
+                    const idText = idCell.textContent.toLowerCase();
+
+                    // إذا الاسم أو رقم الهوية يطابق البحث
+                    if (nameText.includes(searchValue) || idText.includes(searchValue)) {
+                        rows[i].style.display = '';
+                    } else {
+                        rows[i].style.display = 'none';
+                    }
+                }
+            }
+        });
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="../static/css/patient_form.css">
+    <title>New Report - Patient Info</title>
+</head>
+
+<body>
+
+    <div class="nav-buttons">
+        <a href="/new-report"><button>➕ إضافة تقرير جديد</button></a>
+        <a href="/reports"><button>📄 عرض جميع التقارير</button></a>
+    </div>
+
+    <h2>Patient Information</h2>
+
+    <form method="post" id="patientForm">
+        <!-- ======================================= -->
+        <!-- بيانات المريض الأساسية -->
+        <!-- ======================================= -->
+        <!-- ✅ حقل مخفي لحفظ التحليل النشط -->
+        <input type="hidden" name="active_analysis" id="activeAnalysisInput" value="">
+        <div>
+            <label>Patient Name</label>
+            <input type="text" name="name" required>
+        </div>
+
+        <div>
+            <label>ID Number</label>
+            <input type="text" name="patient_id_number" required>
+        </div>
+
+        <div>
+            <label>Phone</label>
+            <input type="text" name="phone">
+        </div>
+
+        <div>
+            <label>Age</label>
+            <input type="number" name="age" required>
+        </div>
+
+        <div>
+            <label>Gender</label>
+            <select name="gender" required>
+                <option value="">-- Select --</option>
+                <option value="Male">Male</option>
+                <option value="Female">Female</option>
+            </select>
+        </div>
+
+        <div>
+            <label>Doctor Name</label>
+            <select name="doctor_name" required>
+                <option value="">-- Select Doctor --</option>
+                {% for doctor in doctors %}
+                <option value="{{ doctor }}">{{ doctor }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <!-- ======================================= -->
+        <!-- اختيار التحاليل (Checkboxes) -->
+        <!-- ======================================= -->
+        <div style="grid-column: 1 / -1;">
+            <label style="font-size: 18px; margin-top: 20px; margin-bottom: 10px; display: block;">Select Analysis
+                Types:</label>
+            <div class="analysis-checkboxes">
+                {% for analysis_name in templates.keys() %}
+                <label class="checkbox-label">
+                    <input type="checkbox" name="selected_analyses" value="{{ analysis_name }}"
+                        class="analysis-checkbox">
+                    {{ analysis_name }}
+                </label>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- ======================================= -->
+        <!-- Tabs للتحاليل -->
+        <!-- ======================================= -->
+        <div id="analysisTabs" style="grid-column: 1 / -1; display: none;">
+            <div class="tabs-header" id="tabsHeader"></div>
+            <div class="tabs-content" id="tabsContent"></div>
+        </div>
+
+        <button type="submit">Save Report</button>
+    </form>
+
+    <!-- ======================================= -->
+    <!-- JavaScript -->
+    <!-- ======================================= -->
+    <script>
+        // =======================================
+        // البيانات من السيرفر (القوالب)
+        // =======================================
+        //        const templates = {{ templates | tojson }};
+        const templates = JSON.parse('{{ templates | tojson | safe }}');
+
+        // =======================================
+        // العناصر
+        // =======================================
+        const checkboxes = document.querySelectorAll('.analysis-checkbox');
+        const tabsContainer = document.getElementById('analysisTabs');
+        const tabsHeader = document.getElementById('tabsHeader');
+        const tabsContent = document.getElementById('tabsContent');
+
+        let selectedAnalyses = new Set();
+        let activeTab = null;
+
+        // =======================================
+        // عند تغيير الـ checkboxes
+        // =======================================
+        checkboxes.forEach(checkbox => {
+            checkbox.addEventListener('change', function () {
+                const analysisName = this.value;
+
+                if (this.checked) {
+                    // إضافة التحليل
+                    selectedAnalyses.add(analysisName);
+                } else {
+                    // إزالة التحليل
+                    selectedAnalyses.delete(analysisName);
+                }
+
+                updateTabs();
+            });
+        });
+
+        // =======================================
+        // تحديث الـ Tabs
+        // =======================================
+        function updateTabs() {
+            // إذا ما في تحاليل محددة، إخفاء الـ tabs
+            if (selectedAnalyses.size === 0) {
+                tabsContainer.style.display = 'none';
+                return;
+            }
+
+            // إظهار الـ tabs
+            tabsContainer.style.display = 'block';
+
+            // مسح المحتوى القديم
+            tabsHeader.innerHTML = '';
+            tabsContent.innerHTML = '';
+
+            // إنشاء tabs جديدة
+            let isFirst = true;
+            selectedAnalyses.forEach(analysisName => {
+                // إنشاء زر الـ tab
+                const tabButton = document.createElement('button');
+                tabButton.type = 'button';
+                tabButton.className = 'tab-button';
+                tabButton.textContent = analysisName;
+                tabButton.onclick = () => showTab(analysisName);
+                tabsHeader.appendChild(tabButton);
+
+                // إنشاء محتوى الـ tab
+                const tabPane = document.createElement('div');
+                tabPane.className = 'tab-pane';
+                tabPane.id = `tab-${analysisName}`;
+
+                // جلب الحقول من القالب
+                const fields = templates[analysisName] || [];
+
+                // إنشاء HTML للحقول
+                let fieldsHTML = '';
+                fields.forEach(field => {
+                    fieldsHTML += `
+                        <div class="result-field">
+                            <label>${field.label || field.name}</label>
+                            <input type="text" 
+                                   name="${analysisName}_${field.name}" 
+                                   placeholder="Value"
+                                   data-analysis="${analysisName}">
+                            <input type="text" 
+                                   name="${analysisName}_${field.name}_range" 
+                                   placeholder="Normal Range" 
+                                   value="${field.normal_range || ''}"
+                                   data-analysis="${analysisName}">
+                        </div>
+                    `;
+                });
+
+                tabPane.innerHTML = fieldsHTML;
+                tabsContent.appendChild(tabPane);
+
+                // تفعيل أول tab
+                if (isFirst) {
+                    showTab(analysisName);
+                    isFirst = false;
+                }
+            });
+        }
+
+        // =======================================
+        // إظهار tab محدد
+        // =======================================
+        function showTab(analysisName) {
+            // إخفاء كل الـ tabs
+            document.querySelectorAll('.tab-pane').forEach(pane => {
+                pane.style.display = 'none';
+            });
+
+            // إزالة active من كل الأزرار
+            document.querySelectorAll('.tab-button').forEach(btn => {
+                btn.classList.remove('active');
+            });
+
+            // إظهار الـ tab المحدد
+            const tabPane = document.getElementById(`tab-${analysisName}`);
+            if (tabPane) {
+                tabPane.style.display = 'block';
+            }
+
+            // تفعيل الزر
+            event.target.classList.add('active');
+            activeTab = analysisName;
+        }
+
+        function showTab(analysisName) {
+            // إخفاء كل الـ tabs
+            document.querySelectorAll('.tab-pane').forEach(pane => {
+                pane.style.display = 'none';
+            });
+
+            // إزالة active من كل الأزرار
+            document.querySelectorAll('.tab-button').forEach(btn => {
+                btn.classList.remove('active');
+            });
+
+            // إظهار الـ tab المحدد
+            const tabPane = document.getElementById(`tab-${analysisName}`);
+            if (tabPane) {
+                tabPane.style.display = 'block';
+            }
+
+            // تفعيل الزر
+            event.target.classList.add('active');
+            activeTab = analysisName;
+
+            // ✅ جديد: تحديث الحقل المخفي
+            document.getElementById('activeAnalysisInput').value = analysisName;
+        }
+
+    </script>
+
+</body>
+
+</html>

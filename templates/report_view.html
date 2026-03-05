@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="../static/css/report_view.css">
+    <title>Report View</title>
+</head>
+
+<body>
+
+    <h2>Patient Report</h2>
+
+    <h3>Patient Info</h3>
+
+    <div class="patient-info">
+        <div class="info-item"><strong>Name:</strong> {{ patient[1] }}</div>
+        <div class="info-item"><strong>ID Number:</strong> {{ patient[2] }}</div>
+        <div class="info-item"><strong>Phone:</strong> {{ patient[3] }}</div>
+        <div class="info-item"><strong>Age:</strong> {{ patient[4] }}</div>
+        <div class="info-item"><strong>Gender:</strong> {{ patient[5] }}</div>
+        <div class="info-item"><strong>Analysis:</strong> {{ patient[6] }}</div>
+        <div class="info-item" style="grid-column: 1 / -1;"><strong>Date:</strong> {{ patient[7] }}</div>
+    </div>
+
+    <h3>Results</h3>
+
+    <table>
+        <tr>
+            <th>Field</th>
+            <th>Value</th>
+            <th>Unit</th>
+            <th>Normal Range</th>
+        </tr>
+
+        {% for r in results %}
+        <tr>
+            <td>{{ r[0] }}</td>
+            <td>{{ r[1] }}</td>
+            <td>{{ r[2] }}</td>
+            <td>{{ r[3] }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+
+    <!-- ======================================= -->
+    <!-- أزرار الطباعة -->
+    <!-- ======================================= -->
+    <div style="text-align: center; margin: 30px 0;">
+        <h3 style="margin-bottom: 20px; color: #2c3e50;">Print Options</h3>
+
+        <!-- طباعة شاملة (إذا في أكثر من تحليل) -->
+        {% if all_analyses and all_analyses|length > 1 %}
+        <a href="/print-comprehensive/{{ patient_id }}" target="_blank" class="pdf-link"
+            style="background-color: #27ae60;">
+            📄 Print All Analyses ({{ all_analyses|length }} Tests)
+        </a>
+        <br><br>
+        {% endif %}
+
+        <!-- طباعة فردية لكل تحليل -->
+        <div style="display: flex; gap: 15px; justify-content: center; flex-wrap: wrap;">
+            {% for analysis in all_analyses %}
+            <a href="/print-single/{{ analysis[0] }}" target="_blank" class="pdf-link"
+                style="background-color: {% if analysis[0] == patient[0] %}#e74c3c{% else %}#3498db{% endif %};">
+                🖨️ Print {{ analysis[1] }}
+            </a>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- ======================================= -->
+    <!-- أزرار التنقل -->
+    <!-- ======================================= -->
+    <div class="nav-buttons">
+        <a href="/new-report"><button>➕ إضافة تقرير جديد</button></a>
+        <a href="/reports"><button>📄 عرض جميع التقارير</button></a>
+    </div>
+
+</body>
+
+</html>

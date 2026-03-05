@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Patient Report</title>
+    <link rel="stylesheet" href="../static/css/print.css">
+</head>
+
+<body>
+    <header>
+        <img src="../static/img/ترويسة.png" filename="header.png" style="width:100%; height:3cm;">
+    </header>
+
+    <main>
+        <h2>Patient Info</h2>
+
+        <div class="patient-info">
+            <p><strong>Name:</strong> {{ patient[0] }}</p>
+            <p><strong>ID:</strong> {{ patient[1] }}</p>
+            <p><strong>Phone:</strong> {{ patient[2] }}</p>
+            <p><strong>Age:</strong> {{ patient[3] }}</p>
+            <p><strong>Gender:</strong> {{ patient[4] }}</p>
+            <p><strong>Analysis:</strong> {{ patient[5] }}</p>
+        </div>
+
+        <div class="results">
+            <h2>Results</h2>
+            <div class="results-grid">
+                {% for r in results %}
+                <p>
+                    {{ r[0] }}: {{ r[1] }} {{ r[2] }}
+                    {% if r[3] %}
+                    <span style="color: #666; font-size: 12px;">(Normal: {{ r[3] }})</span>
+                    {% endif %}
+                </p>
+                {% endfor %}
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <p>مرخص من وزارة الصحة الفلسطينية</p>
+        <hr color="black">
+        <p>غزة - شارع الوحدة - مقابل عيادة الدرج (البندر)</p>
+    </footer>
+</body>
+
+</html>

@@ -1,0 +1,167 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Arial', sans-serif;
+    background-color: #f5f7fa;
+    padding: 30px;
+    color: #333;
+    font-weight: 600;
+    max-width: 900px;
+    margin: 0 auto;
+}
+
+/* العناوين */
+h2 {
+    color: #2c3e50;
+    margin-bottom: 30px;
+    font-size: 28px;
+    border-bottom: 3px solid #4a90e2;
+    padding-bottom: 10px;
+    text-align: center;
+}
+
+h3 {
+    color: #2c3e50;
+    font-size: 20px;
+    margin-bottom: 15px;
+    margin-top: 25px;
+}
+
+/* معلومات المريض */
+.patient-info {
+    background-color: white;
+    padding: 25px;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+    margin-bottom: 30px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+}
+
+.info-item {
+    padding: 10px;
+    background-color: #f8f9fa;
+    border-radius: 5px;
+    border-left: 3px solid #4a90e2;
+}
+
+.info-item strong {
+    color: #2c3e50;
+    margin-right: 10px;
+}
+
+/* خط فاصل */
+hr {
+    border: none;
+    border-top: 2px solid #e1e8ed;
+    margin: 30px 0;
+}
+
+/* الجدول */
+table {
+    width: 100%;
+    background-color: white;
+    border-collapse: collapse;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+    margin-bottom: 30px;
+}
+
+th {
+    background-color: #4a90e2;
+    color: white;
+    padding: 15px;
+    text-align: center;
+    font-weight: 600;
+    font-size: 14px;
+    text-transform: uppercase;
+}
+
+td {
+    padding: 12px 15px;
+    text-align: center;
+    border-bottom: 1px solid #e8ecf1;
+    font-size: 15px;
+    font-weight: 600;
+}
+
+tr:hover {
+    background-color: #f0f4f8;
+}
+
+tr:last-child td {
+    border-bottom: none;
+}
+
+/* الأزرار */
+.nav-buttons {
+    margin-top: 30px;
+    display: flex;
+    gap: 15px;
+    justify-content: center;
+}
+
+button {
+    background-color: #4a90e2;
+    color: white;
+    border: none;
+    padding: 12px 24px;
+    font-size: 15px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    font-weight: 600;
+}
+
+button:hover {
+    background-color: #357abd;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+    transform: translateY(-2px);
+}
+
+/* رابط PDF */
+.pdf-link {
+    display: inline-block;
+    background-color: #e74c3c;
+    color: white;
+    padding: 12px 30px;
+    border-radius: 6px;
+    text-decoration: none;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    margin-bottom: 20px;
+}
+
+.pdf-link:hover {
+    background-color: #c0392b;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+/* responsive */
+@media (max-width: 768px) {
+    body {
+        padding: 15px;
+    }
+
+    .patient-info {
+        grid-template-columns: 1fr;
+    }
+
+    table {
+        font-size: 12px;
+    }
+
+    th,
+    td {
+        padding: 10px 8px;
+    }
+}
