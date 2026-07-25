@@ -24,7 +24,7 @@ pythonnet==3.0.5
 pywebview==6.2.1
 pywin32-ctypes==0.2.3
 reportlab==4.0.7
-setuptools==82.0.1
+setuptools==83.0.0
 six==1.17.0
 typing_extensions==4.15.0
 Werkzeug==3.1.8
